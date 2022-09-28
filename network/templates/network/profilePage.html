@@ -1,0 +1,105 @@
+{% extends "network/layout.html" %}
+{% load static %}
+{% block body %}
+    
+    <h2>All Posts</h2>
+   
+    <div  class = "container-fluid">     
+        
+        <div class="card space" >
+            <h4> {{ profile.username| capfirst }}</h4>
+            <p>{{ followers }} follower(s) </p>
+            <p>{{ following }} following </p>
+            {% if isSelf %}           
+            {% else %}
+                {% if user.is_authenticated %}
+                    <form action = "{% url 'follow' profile %}" method = "post">
+                        <p><input type="submit" value = "{{ follow }}" class="btn btn-primary"/> </p>
+                    </form>
+                {% else %}
+                {% endif %}
+                    
+            {% endif %}
+        </div>
+    </a> 
+    </div>     
+
+    {% if user.is_authenticated %}
+    
+
+   {% else %}
+
+   {% endif %}
+   <div id="posts-view">
+    {% for post in page_obj %}
+    <div  class = "container-fluid">     
+        
+            <!-- <div class="card space" >
+                <a  style="color:black" href="{% url 'profile' post.poster %}" ><h5> {{ post.poster| capfirst }}</h5> </a>
+                <a href="{% url 'edit'   %}" >Edit</a>
+                <p> {{ post.postNote }}</p>
+                <p> {{ post.timeStamp }}</p>
+                <p><i class="fa fa-heart-o" style="font-size:18px"></i> {{post.likes}}</p>
+              
+            </div>
+        </a>  -->
+        <div id = "{{ post.post_id }}"class="card space" >
+                <a  style="color:black" href="{% url 'profile' post.poster %}" ><h5> {{ post.poster| capfirst }}</h5> </a>
+                {% if user.is_authenticated %}
+                    {% if user == post.poster %}
+                        <a class = "link" id = "a{{ post.post_id }}" href="{% url 'edit' %}">Edit</a>
+                    {% else %}
+                    {% endif %}
+                {% else %} 
+                {% endif %}
+                <p class =  "post" id = "post{{ post.post_id }}"> {{ post.postNote }}</p>
+                <p> {{ post.timeStamp }}</p>
+                <form id = "form{{ post.post_id }}" style="display: none;" class="form-group">
+                    {% csrf_token %}
+                    <textarea class="form-control" id="text{{ post.post_id }}" name= "posttext" ></textarea>
+                
+                    <input id = "post" type="submit" value ="Update" class="btn btn-primary"/>
+                </form>
+                {% if  user in  post.likers.all %}
+                    <p id = "like{{ post.post_id }}" ><a  class = "like" id = "c{{post.post_id}}" ><i  id = "b{{ post.post_id }}" class=" fa fa-heart" style="font-size:18px; color: blue"></i> </a> {{post.likes}}</a></p>
+                {% else %}
+                    <p id = "like{{ post.post_id }}" ><a  class = "like" id = "c{{post.post_id}}"><i  id = "b{{ post.post_id }}" class=" fa fa-heart-o" style="font-size:18px"></i> </a> {{post.likes}}</a></p>
+                {% endif %}
+                
+                            
+        </div>
+
+    </div>    
+    {% empty %}
+        <div> No Posts Avialable.</div>
+    {% endfor %}
+    <nav aria-label="Page navigation example">
+        <ul class="pagination justify-content-center">          
+                {% if page_obj.has_previous %}
+                <li class="page-item">
+                    <a class="page-link"   href="?page=1">&laquo; first</a>
+                </li>
+                <li class="page-item">
+                    <a class="page-link"  href="?page={{ page_obj.previous_page_number }}">previous</a>
+                </li>
+                {% endif %}
+        
+                {% if page_obj.has_next %}
+                   <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">next</a>
+                   </li>
+                   <li>
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">last &raquo;</a>
+                    </li>
+                {% endif %}       
+        </ul>
+    </nav>
+ 
+</div>
+  
+{% endblock %}
+
+{% block script %}
+    <script src="{% static 'network/index.js' %}"></script>
+   
+{% endblock %}
